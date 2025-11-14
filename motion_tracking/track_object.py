@@ -20,12 +20,8 @@ def on_click(event, x, y, flags, param):
         v = int(pixel[2])
 
         print("Clicked HSV:", pixel)
-        print(f'v={v}, {v+60}')
-
         lower_hsv = np.array([max(h - 10, 0), max(s - 60, 0), max(v - 60, 0)])
         upper_hsv = np.array([min(h + 10, 179), min(s + 60, 255), min(v + 60, 255)])
-
-        print("Use this range:")
         print("lower_hsv =", lower_hsv)
         print("upper_hsv =", upper_hsv)
         print()
