@@ -5,10 +5,15 @@ lower_hsv = np.array([0, 120, 70])
 upper_hsv = np.array([10, 255, 255])
 
 current_frame = None 
-
+origin_center = None
 
 def on_click(event, x, y, flags, param):
-    global lower_hsv, upper_hsv, current_frame
+    """
+    Handler for user click on screen. Will adjust the lower and upper HSV vectors 
+    for tracking the colour that the user clicked on and resets the origin position 
+    for the new object
+    """
+    global lower_hsv, upper_hsv, current_frame, origin_center
     if event == cv2.EVENT_LBUTTONDOWN:
         if current_frame is None:
             return
@@ -19,19 +24,25 @@ def on_click(event, x, y, flags, param):
         s = int(pixel[1])
         v = int(pixel[2])
 
-        print("Clicked HSV:", pixel)
         lower_hsv = np.array([max(h - 10, 0), max(s - 60, 0), max(v - 60, 0)])
         upper_hsv = np.array([min(h + 10, 179), min(s + 60, 255), min(v + 60, 255)])
+
+        print("Clicked HSV:", pixel)
         print("lower_hsv =", lower_hsv)
         print("upper_hsv =", upper_hsv)
         print()
 
+        # replace origin center with new starting location
+        origin_center = None
+
 
 def main():
-    global current_frame, origin_c
+    """
+    Main while loop that runs to continously track object of desired colour and 
+    monitors movement.
+    """
+    global current_frame, origin_center
     cap = cv2.VideoCapture(1) 
-
-    origin_center = None
 
     cv2.namedWindow("Tracking")
     cv2.setMouseCallback("Tracking", on_click)
@@ -77,6 +88,7 @@ def main():
                 dx = cx - origin_center[0]
                 dy = cy - origin_center[1]
 
+        # display object displacement
         text = f"dx: {dx}, dy: {dy}"
         cv2.putText(frame, text, (20, 40), cv2.FONT_HERSHEY_SIMPLEX,
                     1.0, (0, 255, 0), 2)
